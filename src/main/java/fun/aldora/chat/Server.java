@@ -8,7 +8,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class Server extends Chat {
     private ServerSocket serverSocket;
@@ -17,7 +16,6 @@ public class Server extends Chat {
     public static void main(String[] args) {
         Server server = new Server();
         server.setServerSocket();
-        server.sendSystemInput();
 
         int i = 1;
         while (!server.serverSocket.isClosed()) {
@@ -60,39 +58,44 @@ public class Server extends Chat {
                 String msg = reader.readLine();
 
                 while (msg != null) {
-                    System.out.println(talkToName + ": " + msg);
+                    String finalMsg = talkToName + ": " + msg;
+                    System.out.println(finalMsg);
+                    writerList.forEach(writerItem -> {
+                        writerItem.println(finalMsg);
+                        writerItem.flush();
+                    });
                     msg = reader.readLine();
+
                 }
-                System.out.println("client close connection");
+                System.out.println(talkToName + " close connection");
 
                 writer.close();
                 clientSocket.close();
-                serverSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         };
     }
 
-    private void sendSystemInput() {
-        Thread thread = new Thread(getSystemInRunnable(), "read-sys-input");
-        thread.start();
-    }
-
-    private Runnable getSystemInRunnable() {
-        return () -> {
-            Scanner scanner = new Scanner(System.in);
-            String msg;
-            while (true) {
-                msg = scanner.nextLine();
-                final String finalMsg = msg;
-                writerList.forEach(writer -> {
-                    writer.println(finalMsg);
-                    writer.flush();
-                });
-            }
-        };
-    }
+//    private void sendSystemInput() {
+//        Thread thread = new Thread(getSystemInRunnable(), "read-sys-input");
+//        thread.start();
+//    }
+//
+//    private Runnable getSystemInRunnable() {
+//        return () -> {
+//            Scanner scanner = new Scanner(System.in);
+//            String msg;
+//            while (true) {
+//                msg = scanner.nextLine();
+//                final String finalMsg = msg;
+//                writerList.forEach(writer -> {
+//                    writer.println(finalMsg);
+//                    writer.flush();
+//                });
+//            }
+//        };
+//    }
 
     private void setServerSocket() {
         try {

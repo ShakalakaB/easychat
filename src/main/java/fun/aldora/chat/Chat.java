@@ -36,7 +36,7 @@ public abstract class Chat {
                 String msg = reader.readLine();
 
                 while (msg != null) {
-                    System.out.println(talkToName + ": " + msg);
+                    System.out.println(msg);
                     msg = reader.readLine();
                 }
                 System.out.println("connection closed");
